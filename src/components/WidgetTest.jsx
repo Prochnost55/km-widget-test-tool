@@ -4,6 +4,8 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
+import InputGroup from 'react-bootstrap/InputGroup';
+
 const ENV = {
   dev: {
     appId: "23a6d30a59d247fa64605501f58074ea3",
@@ -24,6 +26,8 @@ const ENV = {
 };
 function WidgetTest() {
   const [selectedEnv, setSelectedEnv] = React.useState("dev");
+  const [applicationId, setApplicationId] = React.useState(ENV[selectedEnv].appId);
+
   const clearStorage = () => {
     localStorage.clear();
     sessionStorage.clear();
@@ -46,7 +50,7 @@ function WidgetTest() {
         console.log('clickFunctionTwo');
     }
     var kommunicateSettings = {
-      appId: ENV[selectedEnv].appId,
+      appId: applicationId || ENV[selectedEnv].appId,
       popupWidget: true,
       automaticChatOpenOnNavigation: true,
       locShare: true,
@@ -121,6 +125,20 @@ function WidgetTest() {
                 </Col>
               </Row>
             </Stack>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <InputGroup className="mb-3">
+            <InputGroup.Text id="basic-addon1">App ID</InputGroup.Text>
+              <Form.Control
+                placeholder={ENV[selectedEnv].appId}
+                aria-label="appid"
+                aria-describedby="basic-addon1"
+                value={applicationId}
+                onChange={(e) => {setApplicationId(e.target.value)}}
+              />
+            </InputGroup>
           </Col>
         </Row>
         <Row>
