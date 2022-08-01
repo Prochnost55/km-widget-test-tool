@@ -17,6 +17,10 @@ const ENV = {
     appId: "kommunicate-support",
     "widget-url": "https://widget.kommunicate.io/v2/kommunicate.app",
   },
+  release: {
+    appId: "23a6d30a59d247fa64605501f58074ea3",
+    "widget-url": "https://widget-release.kommunicate.io/v2/kommunicate.app",
+  },
 };
 function WidgetTest() {
   const [selectedEnv, setSelectedEnv] = React.useState("dev");
