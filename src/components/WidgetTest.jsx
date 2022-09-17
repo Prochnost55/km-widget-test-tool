@@ -4,8 +4,14 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
-import InputGroup from 'react-bootstrap/InputGroup';
+import InputGroup from "react-bootstrap/InputGroup";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import CodeEditor from "./CodeEditor/CodeEditor";
 
+const DEFAULT_KM_SETTINGS = {
+  popupWidget: true,
+  automaticChatOpenOnNavigation: true,
+};
 const ENV = {
   dev: {
     appId: "23a6d30a59d247fa64605501f58074ea3",
@@ -26,7 +32,12 @@ const ENV = {
 };
 function WidgetTest() {
   const [selectedEnv, setSelectedEnv] = React.useState("dev");
-  const [applicationId, setApplicationId] = React.useState(ENV[selectedEnv].appId);
+  const [applicationId, setApplicationId] = React.useState(
+    ENV[selectedEnv].appId
+  );
+  const [kmSettings, setKmSettings] = React.useState(
+    JSON.stringify(DEFAULT_KM_SETTINGS, null, 4)
+  );
 
   const clearStorage = () => {
     localStorage.clear();
@@ -43,47 +54,15 @@ function WidgetTest() {
   };
 
   function initScript(d, m) {
-    let clickFunctionOne = function (){
-        console.log('clickFunctionOne');
-    }
-    let clickFunctionTwo = function (){
-        console.log('clickFunctionTwo');
-    }
+    let clickFunctionOne = function () {
+      console.log("clickFunctionOne");
+    };
+    let clickFunctionTwo = function () {
+      console.log("clickFunctionTwo");
+    };
     var kommunicateSettings = {
       appId: applicationId || ENV[selectedEnv].appId,
-      popupWidget: true,
-      automaticChatOpenOnNavigation: true,
-      locShare: true,
-      appSettings: {
-        chatPopupMessage: [
-          {
-            // message: [
-            //   "TaxBuddy saves 2k+ hours every month using Kommunicate’s chatbot",
-            //   "Kommunicate resolves 60% of incoming customer service requests for Epic Sports",
-            //   "California State University uses Kommunicate to handle queries from over 20k students",
-            // ],
-            // templateKey: 3,
-            message: 
-                "TaxBuddy saves 2k+ hours every month using Kommunicate’s chatbot",
-            templateKey: 1,
-            
-            // buttons: [
-            //   {
-            //     label: "Support",
-            //     // onClickAction: function (){
-            //     //     console.log('clickFunctionOne');
-            //     // },
-            //   },
-            //   {
-            //     label: "Get Demo",
-            //     onClickAction: function () {
-            //       console.log("clickFunctiontwo");
-            //     },
-            //   },
-            // ],
-          },
-        ],
-      },
+      ...JSON.parse(kmSettings),
     };
     var s = document.createElement("script");
     s.type = "text/javascript";
@@ -129,18 +108,26 @@ function WidgetTest() {
         </Row>
         <Row>
           <Col md={6}>
-            <InputGroup className="mb-3">
-            <InputGroup.Text id="basic-addon1">App ID</InputGroup.Text>
+            <InputGroup className="mb-3" style={{width: 400}}>
+              <InputGroup.Text id="basic-addon1">App ID</InputGroup.Text>
               <Form.Control
                 placeholder={ENV[selectedEnv].appId}
                 aria-label="appid"
                 aria-describedby="basic-addon1"
                 value={applicationId}
-                onChange={(e) => {setApplicationId(e.target.value)}}
+                onChange={(e) => {
+                  setApplicationId(e.target.value);
+                }}
               />
             </InputGroup>
           </Col>
         </Row>
+        <CodeEditor
+          code={kmSettings}
+          setCode={(code) => {
+            setKmSettings(code);
+          }}
+        />
         <Row>
           <Col>
             <Stack direction="horizontal" gap={3}>
