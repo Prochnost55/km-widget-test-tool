@@ -5,9 +5,8 @@ import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
 import CodeEditor from "./CodeEditor/CodeEditor";
-
+import { setItemInLocalStorage, getItemFromLocalStorage, stringifyFunctions } from "../utils/utils";
 const DEFAULT_KM_SETTINGS = {
   popupWidget: true,
   automaticChatOpenOnNavigation: true,
@@ -31,13 +30,17 @@ const ENV = {
   },
 };
 function WidgetTest() {
-  const [selectedEnv, setSelectedEnv] = React.useState("dev");
-  const [applicationId, setApplicationId] = React.useState(
-    ENV[selectedEnv].appId
-  );
-  const [kmSettings, setKmSettings] = React.useState(
-    JSON.stringify(DEFAULT_KM_SETTINGS, null, 4)
-  );
+  const [selectedEnv, setSelectedEnv] = React.useState();
+  const [applicationId, setApplicationId] = React.useState();
+  const [kmSettings, setKmSettings] = React.useState(JSON.stringify(DEFAULT_KM_SETTINGS, stringifyFunctions, 4));
+
+    React.useEffect(() => {
+        let initState = getItemFromLocalStorage('widget-test');
+        let env = initState.selectedEnv || "dev";
+        setSelectedEnv(env)
+        setApplicationId(initState.applicationId || ENV[env].appId)
+        initState.kmSettings && setKmSettings(initState.kmSettings);
+    }, [])
 
   const clearStorage = () => {
     localStorage.clear();
@@ -50,16 +53,17 @@ function WidgetTest() {
   };
 
   const launchWidget = () => {
+    let dataToSet = {
+        selectedEnv,
+        applicationId,
+        kmSettings
+    }
+
+    setItemInLocalStorage('widget-test', dataToSet);
     initScript(window, window.kommunicate || []);
   };
 
   function initScript(d, m) {
-    let clickFunctionOne = function () {
-      console.log("clickFunctionOne");
-    };
-    let clickFunctionTwo = function () {
-      console.log("clickFunctionTwo");
-    };
     var kommunicateSettings = {
       appId: applicationId || ENV[selectedEnv].appId,
       ...JSON.parse(kmSettings),
@@ -98,7 +102,7 @@ function WidgetTest() {
                       onChange={() => {
                         setSelectedEnv(key);
                       }}
-                      defaultChecked={selectedEnv === key}
+                      checked={selectedEnv === key}
                     />
                   ))}
                 </Col>
@@ -108,10 +112,10 @@ function WidgetTest() {
         </Row>
         <Row>
           <Col md={6}>
-            <InputGroup className="mb-3" style={{width: 400}}>
+            <InputGroup className="mb-3" style={{ width: 400 }}>
               <InputGroup.Text id="basic-addon1">App ID</InputGroup.Text>
               <Form.Control
-                placeholder={ENV[selectedEnv].appId}
+                placeholder={"app Id"}
                 aria-label="appid"
                 aria-describedby="basic-addon1"
                 value={applicationId}
